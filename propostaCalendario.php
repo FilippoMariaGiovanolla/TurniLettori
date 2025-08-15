@@ -5,6 +5,11 @@
     <body>
         <?php
             $mese=$_POST["mese"]; // mese scelto dall'utente per iniziare la creazione del calendario lettori
+            $mese++; // siccome nella definizione dei mesi in calcoloCalendario.html si parte da 0 nel conteggio, qui aumento di uno per ottenere il valore corretto
+            if($mese<10)
+            {
+                $mese="0".$mese;
+            }
             $meseDaPassare=$mese; // mese che verrà utilizzato da passare come hidden al passo successivo. Non utilizzo $mese perché uso quella variabile in un ciclo dove ne aumento il valore, mentre alla fase successiva devo passare il valore che ho ricevuto dalla pagina precedente
             //echo($mese."<br>");
             $numMesi=$_POST["numMesi"]; // numero di mesi da compilare
@@ -104,11 +109,17 @@
             // fine script che calcola il Lunedì dell'Angelo
 
             $calendario=array(); // definisco una variabile che sarà un array da passare bozzaTurni.php
+            $quanteVoltePassoDaOttobre=0; // variabile che mi servirà per determinare il lunedì della Sagra
 
             //funzione per l'output di giorno e data
-            function outputGiornoData($k,$annoInCorso,$mese)
-            {                
+            function outputGiornoData($k,$annoInCorso,$mese,$quanteVoltePassoDaOttobre)
+            {
+                //echo("k: ".$k."<br>");
+                //echo("anno in corso: ".$annoInCorso."<br>");
+                //echo("mese: ".$mese."<br>");
+                //echo("quante volte passo da ottobre: ".$quanteVoltePassoDaOttobre."<br>");
                 global $calendario; // ridefinisco la variabile $calendario all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
+                global $quanteVoltePassoDaOttobre; // ridefinisco la variabile $calendario all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
                 $quanti=count($calendario); //conta gli elementi presenti nell'array
                 $giornoStampato=0;
                 if($k<10)
@@ -118,7 +129,7 @@
                 else
                 {
                     $giornoPerTimestamp=$k;
-                }
+                } 
                 $timestamp=strtotime($annoInCorso."/".$mese."/".$giornoPerTimestamp);
 
                 // script per mostrare a video le abbreviazioni dei giorni in italiano anziché in inglese
@@ -137,6 +148,9 @@
                     $calendario[$quanti][1]=$giornoPerTimestamp;
                     $calendario[$quanti][2]=$mese;
                     $giornoStampato=$k;
+                    if($mese=="10")
+                        $quanteVoltePassoDaOttobre++;
+                    //echo("Quante volte passo da ottobre: ".$quanteVoltePassoDaOttobre."<br>");
                 }
                 
                 //test per l'aggiunta nel calendario delle Messe che non sono di sabato e domenica
@@ -152,6 +166,7 @@
                     ($mese=="08" and $k==14 and $giornoStampato==0) or // prefestiva Assunzione
                     ($mese=="08" and $k==15 and $giornoStampato==0) or // Assunzione
                     ($mese=="09" and $k==8 and $giornoStampato==0) or // Maria Bambina
+                    ($mese=="10" and ($quanteVoltePassoDaOttobre==3 or $quanteVoltePassoDaOttobre==4) and $giornoItaliano=="Lun" and $giornoStampato==0) or // Lunedì della Sagra
                     ($mese=="10" and $k==31 and $giornoStampato==0) or // prefestiva Ognissanti
                     ($mese=="11" and $k==1 and $giornoStampato==0) or // Ognissanti
                     ($mese=="11" and $k==2 and $giornoStampato==0) or // Defunti
@@ -170,6 +185,7 @@
             }
             //fine funzione per l'output di giorno e data
 
+            //$quanteVoltePassoDaOttobre=$quanteVoltePassoDaOttobre+$passoDaOttobre;
 
             echo("<fieldset><legend align='center'><strong>Calendario proposto</strong></legend>");
             //inizio ciclo per l'estrazione dei giorni cui assegnare i lettori
@@ -180,14 +196,14 @@
                     //echo("passo di qui<br>");
                     for($k=1;$k<=30;$k++)
                     {
-                        outputGiornoData($k,$annoInCorso,$mese);
+                        outputGiornoData($k,$annoInCorso,$mese,$quanteVoltePassoDaOttobre);
                     }
                 }
-                elseif($mese==01 or $mese==03 or $mese==05 or $mese==07 or $mese==08 or $mese==10 or $mese=12)
+                elseif($mese==01 or $mese==03 or $mese==05 or $mese==07 or $mese==08 or $mese==10 or $mese==12)
                 {
                     for($k=1;$k<=31;$k++)
                     {
-                        outputGiornoData($k,$annoInCorso,$mese);
+                        outputGiornoData($k,$annoInCorso,$mese,$quanteVoltePassoDaOttobre);
                     }
                 }
                 else
@@ -196,18 +212,36 @@
                     {
                         for($k=1;$k<=29;$k++)
                         {
-                            outputGiornoData($k,$annoInCorso,$mese);
+                            outputGiornoData($k,$annoInCorso,$mese,$quanteVoltePassoDaOttobre);
                         }
                     }
                     else
                     {
                         for($k=1;$k<=28;$k++)
                         {
-                            outputGiornoData($k,$annoInCorso,$mese);
+                            outputGiornoData($k,$annoInCorso,$mese,$quanteVoltePassoDaOttobre);
                         }
                     }
                 }
                 $mese=$mese+1;
+                if($mese==1 or $mese=="1")
+                    $mese="01";
+                if($mese==2 or $mese=="2")
+                    $mese="02";
+                if($mese==3 or $mese=="3")
+                    $mese="03";
+                if($mese==4 or $mese=="4")
+                    $mese="04";
+                if($mese==5 or $mese=="5")
+                    $mese="05";
+                if($mese==6 or $mese=="6")
+                    $mese="06";
+                if($mese==7 or $mese=="7")
+                    $mese="07";
+                 if($mese==8 or $mese=="8")
+                    $mese="08";
+                if($mese==9 or $mese=="9")
+                    $mese="09";
                 $i=$i+1;
             }
             while($i<$numMesi);
@@ -254,7 +288,7 @@
             <table border=0; width="100%">
                 <tr>
                     <td width="50%" align="right"><INPUT TYPE="SUBMIT" NAME="invio" VALUE="Avanti"></td>
-                    <td width="50%" align="left"><a href="calcoloCalendario.php"><img src='Indietro.jpg' width="10%" height="10%"></a></td>
+                    <td width="50%" align="left"><a href="calcoloCalendario.html"><img src='Indietro.jpg' width="10%" height="10%"></a></td>
                 </tr>
             </table>
         </form>

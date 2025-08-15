@@ -205,6 +205,11 @@
                 $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",MARIA BAMBINA";
                 $inserisci=true;
             }
+            elseif($calendario[$i][0]=="Lun" and intval($calendario[$i][1])<>31 and intval($calendario[$i][2])==10)
+            {
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",UFFICIO DEI DEFUNTI";
+                $inserisci=true;
+            }
             elseif(intval($calendario[$i][1])==31 and intval($calendario[$i][2])==10)
             {
                 if($mese=="10" and $numMesi==1)
@@ -214,8 +219,16 @@
                 }
                 else
                 {
-                    $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].",TUTTI I SANTI";
-                    $inserisci=true;
+                    if($i==count($calendario))
+                    {
+                        $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].",TUTTI I SANTI";
+                        $inserisci=true;
+                    }
+                    else
+                    {
+                        $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - 01/11,TUTTI I SANTI";
+                        $inserisci=true;
+                    }
                 }
             }
             elseif(intval($calendario[$i][1])==2 and intval($calendario[$i][2])==11 and (strcmp($calendario[$i][0],"Sab")!=0) and (strcmp($calendario[$i][0],"Dom")!=0))
@@ -245,12 +258,12 @@
             }
             else
             {
-                if(strcmp($calendario[$i][0],"Sab")==0 and ($i!=(count($calendario)-1)))
+                if(strcmp($calendario[$i][0],"Sab")==0 and ($i!=(count($calendario)-1)) and ($calendario[$i][1]!=$giornoSabatoSanto) and ($calendario[$i][2]!=$meseSabatoSanto)) // qui estraggo le ordinarie coppie sabato-domenica, ad eccezione che si tratti del weekend di Pasqua
                 {
                     $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].", "; // lo spazio dopo la virgola concatenata alla fine è intenzionale
                     $inserisci=true;
                 }
-                elseif(strcmp($calendario[$i][0],"Sab")==0 and ($i==(count($calendario)-1)))
+                elseif(strcmp($calendario[$i][0],"Sab")==0 and ($i==(count($calendario)-1)) and ($calendario[$i][1]!=$giornoSabatoSanto) and ($calendario[$i][2]!=$meseSabatoSanto)) // qui estraggo le ordinarie coppie sabato-domenica, ad eccezione che si tratti del weekend di Pasqua
                 {
                     $daInserire=$calendario[$i][1]."/".$calendario[$i][2].", "; // lo spazio dopo la virgola concatenata alla fine è intenzionale
                     $inserisci=true;
@@ -305,6 +318,7 @@
         global $ultimoGiornoIntervalloScelto; // ridefinisco la variabile $ultimoGiornoIntervalloScelto all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
         global $numLettoriAttivi; // ridefinisco la variabile $numLettoriAttivi all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
         
+        $stringaIntegrazione="";
 
         //variabili per lettori prefestivi
         $prefestiviScorsi=0; //aumenta di uno ogni volta che mando a video un prefestivo e si riazzera per permettere di continuare a mandare a video i prefestivi
@@ -315,6 +329,7 @@
         $festiviScorsi=0; //aumenta di uno ogni volta che mando a video un festivo e si riazzera per permettere di continuare a mandare a video i festivi
         global $lettoriFestivi; // ridefinisco la variabile $lettoriFestivi all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
         $quantiLettoriFestivi=0;
+        $lettoriFestiviInRosso=false;
 
         //estraggo lettori e numeri di telefono in ordine alfabetico e li metto in due array separati
         $lettori=array();
@@ -351,7 +366,15 @@
                                 $mesePerIntegrazione=$meseFinaleDaCompilare+1;
                                 if($mesePerIntegrazione==13){$mesePerIntegrazione=1;}
                                 $stringaIntegrazione="01/".strval($mesePerIntegrazione);
-                                echo("<td align='center' colspan='2' width='20%'>".$messa[0]." - <font color='red'><strong>".$stringaIntegrazione."</strong></font></td>");
+                                if(strcmp($stringaIntegrazione,"01/1")==0) // il 31/12 è sabato
+                                {
+                                    echo("<td align='center' colspan='2' width='20%'>".$messa[0]."</td>");
+                                }
+                                else
+                                {
+                                    echo("<td align='center' colspan='2' width='20%'>".$messa[0]." - <font color='red'><strong>".$stringaIntegrazione."</strong></font></td>");
+                                    $lettoriFestiviInRosso=true;
+                                }                                
                             }
                             else
                             {
@@ -372,7 +395,15 @@
                                 $mesePerIntegrazione=$meseFinaleDaCompilare+1;
                                 if($mesePerIntegrazione==13){$mesePerIntegrazione=1;}
                                 $stringaIntegrazione="01/".strval($mesePerIntegrazione);
-                                echo("<td align='center' colspan='2' width='20%'><strong>".$messa[1]."</strong><br>".$messa[0]." - <font color='red'><strong>".$stringaIntegrazione."</strong></font></td>");
+                                if(strcmp($stringaIntegrazione,"01/1")==0) // il 31/12 è sabato
+                                {
+                                    echo("<td align='center' colspan='2' width='20%'><strong>".$messa[1]."</strong><br>".$messa[0]."</td>");
+                                }
+                                else
+                                {
+                                    echo("<td align='center' colspan='2' width='20%'><strong>".$messa[1]."</strong><br>".$messa[0]." - <font color='red'><strong>".$stringaIntegrazione."</strong></font></td>");
+                                    $lettoriFestiviInRosso=true;
+                                }                                
                             }
                             else
                             {
@@ -381,7 +412,20 @@
                         }
                         else
                         {
-                            echo("<td align='center' colspan='2' width='20%'><strong>".$messa[1]."</strong><br>".$messa[0]."</td>");
+                            // qui recupero i mesi delle due date presenti in $messa[0]
+                            $primoMese=strval(substr($messa[0],0,2));
+                            $secondoMese=strval(substr($messa[0],-2,2));
+
+                            if($secondoMese>$meseFinaleDaCompilare)
+                            {
+                                echo("<td align='center' colspan='2' width='20%'><strong>".$messa[1]."</strong><br>".substr($messa[0],0,5)." - <font color='red'><strong>01/".$secondoMese."</strong></font></td>");
+                                $lettoriFestiviInRosso=true;
+                            }
+                            else
+                            {
+                                echo("<td align='center' colspan='2' width='20%'><strong>".$messa[1]."</strong><br>".$messa[0]."</td>");
+                                /*echo("<td align='center' colspan='2' width='20%'><strong>".$messa[1]."</strong><br>".$messa[0]."<br>Ultimo giorno intervallo scelto: ".$ultimoGiornoIntervalloScelto."<br>Data da confrontare: ".$dataDaConfrontare."</td>");*/
+                            }
                         }
                     }
                 }
@@ -399,7 +443,7 @@
                     {
                         $query="select count(*) from lettori where preferenzaPrefestiva='S' and attivo='S'";
                         $risultato=mysql_query($query)
-                            or die ("Impossibile effettuare il conteggio degli elettori prefestivi: ".mysql_error());
+                            or die ("Impossibile effettuare il conteggio dei lettori prefestivi: ".mysql_error());
                         while($riga=mysql_fetch_row($risultato))
                         {
                             $quantiLettoriPrefestivi=$riga[0];
@@ -421,32 +465,77 @@
                     //echo("Sono passato? ".$sonoPassato."<br>");
                     if(($prefestiviScorsi<$quantiLettoriPrefestivi) and ($i<$quanteMesse))
                     {
-                        echo($lettoriPrefestivi[$prefestiviScorsi]."<br>");
-                        $prefestiviScorsi++;
+                        if(strcmp($messa[1],"SANTO STEFANO")==0)
+                            echo("/"); // se è Santo Stefano, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0)
+                            echo("/"); // se è il lunedì dell'Angelo, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0)
+                            echo("/"); // se è il lunedì della sagra, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"MARIA BAMBINA")==0)
+                            echo("/"); // se è Maria Bambina, non devono essere mostrati lettori prefestivi
+                        else
+                        {
+                            echo($lettoriPrefestivi[$prefestiviScorsi]."<br>");
+                            $prefestiviScorsi++;
+                        }
                         $sonoPassato=true;
                         //echo(" prefestivi scorsi: ".$prefestiviScorsi." ");
                         //echo(" passo<br>");
                     }
                     if(($prefestiviScorsi<$quantiLettoriPrefestivi) and ($i<$quanteMesse))
                     {
-                        echo($lettoriPrefestivi[$prefestiviScorsi]);
-                        $prefestiviScorsi++;
+                        if(strcmp($messa[1],"SANTO STEFANO")==0)
+                            echo("/"); // se è Santo Stefano, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0)
+                            echo("/"); // se è il lunedì dell'Angelo, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0)
+                            echo("/"); // se è il lunedì della sagra, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"MARIA BAMBINA")==0)
+                            echo("/"); // se è Maria Bambina, non devono essere mostrati lettori prefestivi
+                        else
+                        {
+                            //echo("Messe[1]: ".$messe[1]."<br>");
+                            echo($lettoriPrefestivi[$prefestiviScorsi]);
+                            $prefestiviScorsi++;
+                        }
                         $sonoPassato=true;
                         //echo(" prefestivi scorsi: ".$prefestiviScorsi." ");
                         //echo(" passo ancora<br>");
                     }
                     elseif($prefestiviScorsi==$quantiLettoriPrefestivi and $sonoPassato==true and $i<$quanteMesse)
                     {
-                        echo($lettoriPrefestivi[0]);
-                        $prefestiviScorsi=1;
+                        if(strcmp($messa[1],"SANTO STEFANO")==0)
+                            echo("/"); // se è Santo Stefano, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0)
+                            echo("/"); // se è il lunedì dell'Angelo, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0)
+                            echo("/"); // se è il lunedì della sagra, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"MARIA BAMBINA")==0)
+                            echo("/"); // se è Maria Bambina, non devono essere mostrati lettori prefestivi
+                        else
+                        {
+                            echo($lettoriPrefestivi[0]);
+                            $prefestiviScorsi=1;
+                        }
                         //echo(" prefestivi scorsi: ".$prefestiviScorsi." ");
                         //echo(" passo ancora e ancora<br>");
                     }
                     elseif($prefestiviScorsi==$quantiLettoriPrefestivi and $sonoPassato==false and $i<$quanteMesse)
                     {
-                        echo($lettoriPrefestivi[0]."<br>".$lettoriPrefestivi[1]);
-                        $prefestiviScorsi=2;
-                    }                 
+                        if(strcmp($messa[1],"SANTO STEFANO")==0)
+                            echo("/"); // se è Santo Stefano, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0)
+                            echo("/"); // se è il lunedì dell'Angelo, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0)
+                            echo("/"); // se è il lunedì della sagra, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"MARIA BAMBINA")==0)
+                            echo("/"); // se è Maria Bambina, non devono essere mostrati lettori prefestivi
+                        else
+                        {
+                            echo($lettoriPrefestivi[0]."<br>".$lettoriPrefestivi[1]);
+                            $prefestiviScorsi=2;
+                        }
+                    }
                 echo("</td>");
                 //fine colonna lettori prefestivi
 
@@ -460,7 +549,7 @@
                 {
                     $query="select count(*) from lettori where preferenzaFestiva='S' and attivo='S'";
                     $risultato=mysql_query($query)
-                        or die ("Impossibile effettuare il conteggio degli elettori festivi: ".mysql_error());
+                        or die ("Impossibile effettuare il conteggio dei lettori festivi: ".mysql_error());
                     while($riga=mysql_fetch_row($risultato))
                     {
                         $quantiLettoriFestivi=$riga[0];
@@ -482,7 +571,7 @@
                 //echo("Sono passato? ".$sonoPassatoFestivo."<br>");
                 if(($festiviScorsi<$quantiLettoriFestivi) and ($i<$quanteMesse))
                 {
-                    if(strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0)
+                    if((strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0) and ($lettoriFestiviInRosso==false))
                     {
                         echo($lettoriFestivi[$festiviScorsi]."<br>");
                         $festiviScorsi++;
@@ -490,17 +579,45 @@
                     }
                     else
                     {
-                        echo("<font color='red'><strong>".$lettoriFestivi[$festiviScorsi]."</strong></font><br>");
+                        /*echo("FestiviScorsi: ".$festiviScorsi."<br>");
+                        echo("QuantiLettoriFestivi: ".$quantiLettoriFestivi."<br>");
+                        echo("i: ".$i."<br>");
+                        echo("QuanteMesse: ".$quanteMesse."<br>");
+                        echo("UltimoGiornoIntervalloScelto: ".$ultimoGiornoIntervalloScelto."<br>");
+                        echo("DataDaConfrontare: ".$dataDaConfrontare."<br>");
+                        echo("LettoriFestiviInRosso: ".$lettoriFestiviInRosso."<br>");*/
+                        if($lettoriFestiviInRosso==true)
+                        {
+                            if(strcmp($stringaIntegrazione,"01/1")==0) // il 31/12 è sabato
+                            {
+                                echo("/");
+                            }
+                            else
+                            {
+                                echo("<font color='red'><strong>".$lettoriFestivi[$festiviScorsi]."</strong></font><br>");
+                            }
+                        }
+                        else
+                        {
+                            if(strcmp($stringaIntegrazione,"01/1")==0) // il 31/12 è sabato
+                            {
+                                echo("/");
+                            }
+                            else
+                            {
+                                echo($lettoriFestivi[$festiviScorsi]."<br>");
+                            }
+                        }
+                        //echo("Stringa integrazione: ".$stringaIntegrazione." - passo qui 1<br>");
                         $festiviScorsi++;
                         $sonoPassatoFestivo=true;
-                        //echo("passo nel rosso<br>");
                     }
                     //echo(" festivi scorsi: ".$festiviScorsi." ");
                     //echo(" passo<br>");
                 }
                 if(($festiviScorsi<$quantiLettoriFestivi) and ($i<$quanteMesse))
                 {
-                    if(strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0)
+                    if((strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0) and ($lettoriFestiviInRosso==false))
                     {
                         echo($lettoriFestivi[$festiviScorsi]);
                         $festiviScorsi++;
@@ -508,40 +625,90 @@
                     }
                     else
                     {
-                        echo("<font color='red'><strong>".$lettoriFestivi[$festiviScorsi]."</strong></font>");
+                        if($lettoriFestiviInRosso==true)
+                        {
+                            if(strcmp($stringaIntegrazione,"01/1")==0) // il 31/12 è sabato
+                            {
+                                echo("/");
+                            }
+                            else
+                            {
+                                echo("<font color='red'><strong>".$lettoriFestivi[$festiviScorsi]."</strong></font><br>");
+                            }
+                        }
+                        else
+                        {
+                             if(strcmp($stringaIntegrazione,"01/1")==0) // il 31/12 è sabato
+                            {
+                                echo("/");
+                            }
+                            else
+                            {
+                                echo($lettoriFestivi[$festiviScorsi]."<br>");
+                            }
+                        }
+                        //echo("Stringa integrazione: ".$stringaIntegrazione." - passo qui 2<br>");
                         $festiviScorsi++;
                         $sonoPassatoFestivo=true;
-                        //echo("passo nel rosso<br>");
                     }
                     //echo(" festivi scorsi: ".$festiviScorsi." ");
                     //echo(" passo ancora<br>");
                 }
                 elseif($festiviScorsi==$quantiLettoriFestivi and $sonoPassatoFestivo==true and $i<$quanteMesse)
                 {
-                    if(strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0)
+                   if((strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0) and ($lettoriFestiviInRosso==false))
                     {
                         echo($lettoriFestivi[0]);
                         $festiviScorsi=1;
                     }
                     else
                     {
-                        echo("<font color='red'><strong>".$lettoriFestivi[0]."</strong></font>");
+                        if($lettoriFestiviInRosso==true)
+                        {
+                            echo("<font color='red'><strong>".$lettoriFestivi[0]."</strong></font><br>");
+                        }
+                        else
+                        {
+                            echo($lettoriFestivi[0]."<br>");
+                        }
+                        //echo("passo qui 3<br>");
                         $festiviScorsi=1;
-                        //echo("passo nel rosso<br>");
                     }
                     //echo(" festivi scorsi: ".$festiviScorsi." ");
                     //echo(" passo ancora e ancora<br>");
                 }
                 elseif($festiviScorsi==$quantiLettoriFestivi and $sonoPassatoFestivo==false and $i<$quanteMesse)
                 {
-                    if(strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0)
+                   if((strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0) and ($lettoriFestiviInRosso==false))
                     {
                         echo($lettoriFestivi[0]."<br>".$lettoriFestivi[1]);
                         $festiviScorsi=2;
                     }
                     else
                     {
-                        echo("<font color='red'><strong>".$lettoriFestivi[0]."<br>".$lettoriFestivi[1]."</strong></font>");
+                        if($lettoriFestiviInRosso==true)
+                        {
+                            if(strcmp($stringaIntegrazione,"01/1")==0) // il 31/12 è sabato
+                            {
+                                echo("//");
+                            }
+                            else
+                            {
+                                echo("<font color='red'><strong>".$lettoriFestivi[0]."<br>".$lettoriFestivi[1]."</strong></font><br>");
+                            }
+                        }
+                        else
+                        {
+                            if(strcmp($stringaIntegrazione,"01/1")==0) // il 31/12 è sabato
+                            {
+                                echo("//");
+                            }
+                            else
+                            {
+                                echo($lettoriFestivi[0]."<br>".$lettoriFestivi[1]."<br>");
+                            }
+                        }
+                        //echo("passo qui 4<br>");
                         $festiviScorsi=2;
                         //echo("passo nel rosso<br>");
                     }
@@ -564,7 +731,7 @@
                 //fine colonna dei nomi in ordine alfabetico
 
 
-                // colonna dei numeri di telefono degli elettori in ordine alfabetico (per cognome)
+                // colonna dei numeri di telefono dei lettori in ordine alfabetico (per cognome)
                 echo("<td align='center' width='20%' valign='center'>");
                 if($i<$numLettoriAttivi)
                 {
@@ -575,7 +742,7 @@
                     echo("&nbsp;");
                 }
                 echo("</td>");
-                // fine colonna dei numeri di telefono degli elettori in ordine alfabetico (per cognome)
+                // fine colonna dei numeri di telefono dei lettori in ordine alfabetico (per cognome)
             echo("</tr>");
         }
     }
@@ -641,7 +808,7 @@
             <tr>
                 <td width="33%">&nbsp;</td>
                 <td width="34%">&nbsp;</td>
-                <td width="33%"><div align="center"><strong>Don Marco</strong></div></td>
+                <td width="33%"><div align="center"><strong>Don Stefano</strong></div></td>
             </tr>
         </table>
     <?php
