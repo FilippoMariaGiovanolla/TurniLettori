@@ -596,8 +596,15 @@
                 {
                     if((strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0) and ($lettoriFestiviInRosso==false))
                     {
-                        echo($lettoriFestivi[$festiviScorsi]);
-                        $festiviScorsi++;
+                       if((strcmp($messa[1],"SANTO STEFANO")==0) or (strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0) or (strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0) or (strcmp($messa[1],"MARIA BAMBINA")==0))
+                        {
+                            echo("/"); // se è Santo Stefano, il lunedì dell'angelo, l'ufficio dei defunti alla sagra o la festa di Maria Bambina, serve un lettore solo
+                        }
+                        else
+                        {
+                            echo($lettoriFestivi[$festiviScorsi]);
+                            $festiviScorsi++;
+                        }
                         $sonoPassatoFestivo=true;
                     }
                     else
@@ -635,8 +642,15 @@
                 {
                     if((strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0) and ($lettoriFestiviInRosso==false))
                     {
-                        echo($lettoriFestivi[0]);
-                        $festiviScorsi=1;
+                        if((strcmp($messa[1],"SANTO STEFANO")==0) or (strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0) or (strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0) or (strcmp($messa[1],"MARIA BAMBINA")==0))
+                        {
+                            echo("/"); // se è Santo Stefano, il lunedì dell'angelo, l'ufficio dei defunti alla sagra o la festa di Maria Bambina, serve un lettore solo
+                        }
+                        else
+                        {
+                            echo($lettoriFestivi[0]);
+                            $festiviScorsi=1;
+                        }
                     }
                     else
                     {
@@ -659,8 +673,16 @@
                 {
                     if((strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0) and ($lettoriFestiviInRosso==false))
                     {
-                        echo($lettoriFestivi[0]."<br>".$lettoriFestivi[1]);
-                        $festiviScorsi=2;
+                        if((strcmp($messa[1],"SANTO STEFANO")==0) or (strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0) or (strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0) or (strcmp($messa[1],"MARIA BAMBINA")==0))
+                        {
+                            echo($lettoriFestivi[0]."<br> /"); // se è Santo Stefano, il lunedì dell'angelo, l'ufficio dei defunti alla sagra o la festa di Maria Bambina, serve un lettore solo
+                            $festiviScorsi=1;
+                        }
+                        else
+                        {
+                            echo($lettoriFestivi[0]."<br>".$lettoriFestivi[1]);
+                            $festiviScorsi=2;
+                        }
                     }
                     else
                     {
@@ -684,7 +706,16 @@
                             }
                             else
                             {
-                                echo($lettoriFestivi[0]."<br>".$lettoriFestivi[1]."<br>");
+                                if((strcmp($messa[1],"SANTO STEFANO")==0) or (strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0) or (strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0) or (strcmp($messa[1],"MARIA BAMBINA")==0))
+                                {
+                                        echo($lettoriFestivi[0]."<br>/<br>"); // se è Santo Stefano, il lunedì dell'angelo, l'ufficio dei defunti alla sagra o la festa di Maria Bambina, serve un lettore solo
+                                        $festiviScorsi=1;
+                                }
+                                else
+                                {
+                                    echo($lettoriFestivi[0]."<br>".$lettoriFestivi[1]."<br>");
+                                    $festiviScorsi=2;
+                                }
                             }
                         }
                         $festiviScorsi=2;
