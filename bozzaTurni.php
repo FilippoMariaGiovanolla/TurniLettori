@@ -156,129 +156,262 @@
         $inserisci=false;
         for($i=0;$i<count($calendario);$i++)
         {
-            if($calendario[$i][1]==$giornoPasqua and $calendario[$i][2]==$mesePasqua)
+            if($calendario[$i][1]==$giornoSabatoSanto and $calendario[$i][2]==$mesePasqua)
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",PASQUA";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].",Pasqua";
                 $inserisci=true;
             }
             elseif($calendario[$i][1]==$giornoCeneri and $calendario[$i][2]==$meseCeneri)
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",CENERI";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",Ceneri";
                 $inserisci=true;
             }
             elseif($calendario[$i][1]==$giornoPalme and $calendario[$i][2]==$mesePalme)
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",PALME";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",Palme";
             }
             elseif($calendario[$i][1]==$giornoGiovediSanto and $calendario[$i][2]==$meseGiovediSanto)
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",GIOVED&Iacute; SANTO";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",Gioved&igrave; Santo";
                 $inserisci=true;
             }
             elseif($calendario[$i][1]==$giornoVenerdiSanto and $calendario[$i][2]==$meseVenerdiSanto)
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",VENERD&Iacute; SANTO";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",Venerd&igrave; Santo";
                 $inserisci=true;
             }
             elseif($calendario[$i][1]==$giornoPasquetta and $calendario[$i][2]==$mesePasquetta)
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",LUNED&Iacute; dell'Angelo";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",Luned&igrave; dell'Angelo";
                 $inserisci=true;
             }
             elseif(intval($calendario[$i][1])==1 and intval($calendario[$i][2])==1)
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",MARIA SS. MADRE DI DIO";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",Maria SS. Madre di Dio";
                 $inserisci=true;
             }
             elseif(intval($calendario[$i][1])==5 and intval($calendario[$i][2])==1)
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].",EPIFANIA";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].",Epifania";
                 $inserisci=true;
             }
             elseif(intval($calendario[$i][1])==14 and intval($calendario[$i][2])==8)
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].",ASSUNZIONE";
+                if(strcmp($calendario[$i][0],"Dom")==0)
+                {
+                    $daInserire=$calendario[$i+1][1]."/".$calendario[$i+1][2].",Assunzione"; // se il 14 agosto è domenica, sulla messa dell'Assunzione non deve esserci prefestiva
+                }
+                else
+                {
+                    $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].",Assunzione";
+                }
                 $inserisci=true;
             }
             elseif(intval($calendario[$i][1])==8 and intval($calendario[$i][2])==9 and (strcmp($calendario[$i][0],"Sab")!=0) and (strcmp($calendario[$i][0],"Dom")!=0))
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",MARIA BAMBINA";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",Maria Bambina";
                 $inserisci=true;
             }
             elseif($calendario[$i][0]=="Lun" and intval($calendario[$i][1])<>31 and intval($calendario[$i][2])==10)
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",UFFICIO DEI DEFUNTI";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",Ufficio dei Defunti";
                 $inserisci=true;
             }
             elseif(intval($calendario[$i][1])==31 and intval($calendario[$i][2])==10)
             {
                 if($mese=="10" and $numMesi==1)
                 {
-                    $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",TUTTI I SANTI";
-                    $inserisci=true;
+                    if(strcmp($calendario[$i][0],"Dom")<>0) // se il 31/10 è domenica ed è stato selezionato solo il turno di ottobre, non ci deve essere nessuna menzione della messa di tutti i Santi, per cui le due istruzioni che seguono verranno svolte solo se l'utente sceglie il turno del solo mese di ottobre e se il 31/10 non è domenica
+                    {
+                        $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",Tutti i Santi";
+                        $inserisci=true;
+                    }
                 }
                 else
                 {
                     if($i==count($calendario))
                     {
-                        $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].",TUTTI I SANTI";
+                        if(strcmp($calendario[$i][0],"Dom")==0) // se il 31/10 è domenica e l'utente prevede anche l'estrazione di turni oltre il mese di ottobre, la festa di Tutti i Santi non ha messa prefestiva
+                        {
+                            $daInserire=$calendario[$i+1][1]."/".$calendario[$i+1][2].",Tutti i Santi";
+                        }
+                        else
+                        {
+                            $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].",Tutti i Santi";
+                        }
                         $inserisci=true;
                     }
                     else
                     {
-                        $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - 01/11,TUTTI I SANTI";
+                        if(strcmp($calendario[$i][0],"Dom")==0) // se il 31/10 è domenica e l'utente prevede anche l'estrazione di turni oltre il mese di ottobre, la festa di Tutti i Santi non ha messa prefestiva
+                        {
+                            $daInserire="01/11,Tutti i Santi";
+                        }
+                        else
+                        {
+                            $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - 01/11,Tutti i Santi";
+                        }
                         $inserisci=true;
                     }
                 }
             }
             elseif(intval($calendario[$i][1])==2 and intval($calendario[$i][2])==11 and (strcmp($calendario[$i][0],"Sab")!=0) and (strcmp($calendario[$i][0],"Dom")!=0))
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",FEDELI DEFUNTI";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",Fedeli Defunti";
                 $inserisci=true;
             }
             elseif(intval($calendario[$i][1])==8 and intval($calendario[$i][2])==12)
             {
-                $daInserire=$calendario[$i-1][1]."/".$calendario[$i-1][2]." - ".$calendario[$i][1]."/".$calendario[$i][2].",IMMACOLATA";
+                if(strcmp($calendario[$i][0],"Lun")==0) // se l'8 dicembre è lunedì, non c'è messa prefestiva
+                {
+                    $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",Immacolata";
+                }
+                else
+                {
+                    $daInserire="07/12 - ".$calendario[$i][1]."/".$calendario[$i][2].",Immacolata";
+                }
                 $inserisci=true;
             }
             elseif(intval($calendario[$i][1])==24 and intval($calendario[$i][2])==12)
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].",NATALE";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].",Natale";
                 $inserisci=true;
             }
             elseif(intval($calendario[$i][1])==26 and intval($calendario[$i][2])==12 and (strcmp($calendario[$i][0],"Sab")!=0) and (strcmp($calendario[$i][0],"Dom")!=0))
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",SANTO STEFANO";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",Santo Stefano";
                 $inserisci=true;
             }
             elseif(intval($calendario[$i][1])==31 and intval($calendario[$i][2])==12)
             {
-                $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",PREF. MARIA MADRE DI DIO";
+                $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - 01/01,Maria SS. Madre di Dio";
                 $inserisci=true;
             }
             else
             {
                 if(strcmp($calendario[$i][0],"Sab")==0 and ($i!=(count($calendario)-1)) and ($calendario[$i][1]!=$giornoSabatoSanto) and ($calendario[$i][2]!=$meseSabatoSanto)) // qui estraggo le ordinarie coppie sabato-domenica, ad eccezione che si tratti del weekend di Pasqua
                 {
-                    $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].", "; // lo spazio dopo la virgola concatenata alla fine è intenzionale
-                    $inserisci=true;
+                    if(($calendario[$i][1]==$giornoPalme-1) and ($calendario[$i][2]==$mesePalme))
+                    {
+                        //echo("Passo 1");
+                        $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].",Palme";
+                        $inserisci=true;
+                    }
+                    else
+                    {
+                        //echo("Passo 2");
+                        if(($calendario[$i][1]==15 and intval($calendario[$i][2])==8) or ($calendario[$i][1]==1 and intval($calendario[$i][2])==11) or ($calendario[$i][1]==8 and intval($calendario[$i][2])==12)) // se l'Assunzione, Tutti i Santi o l'Immacolata sono di sabato, la domenica che cade il giorno dopo non deve avere la prefestiva
+                        {
+                            $daInserire=$calendario[$i+1][1]."/".$calendario[$i+1][2].", "; // lo spazio dopo la virgola concatenata alla fine è intenzionale
+                        }
+                        else
+                        {
+                            $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].", "; // lo spazio dopo la virgola concatenata alla fine è intenzionale
+                        }
+                        $inserisci=true;
+                    }
                 }
                 elseif(strcmp($calendario[$i][0],"Sab")==0 and ($i==(count($calendario)-1)) and ($calendario[$i][1]!=$giornoSabatoSanto) and ($calendario[$i][2]!=$meseSabatoSanto)) // qui estraggo le ordinarie coppie sabato-domenica, ad eccezione che si tratti del weekend di Pasqua
                 {
-                    $daInserire=$calendario[$i][1]."/".$calendario[$i][2].", "; // lo spazio dopo la virgola concatenata alla fine è intenzionale
-                    $inserisci=true;
+                    if(($calendario[$i][1]==$giornoPalme-1) and ($calendario[$i][2]==$mesePalme))
+                    {
+                        //echo("Passo 3");
+                        $daInserire=$calendario[$i][1]."/".$calendario[$i][2].",Palme";
+                        $inserisci=true;
+                    }
+                    else
+                    {
+                        //echo("Passo 4");
+                        $daInserire=$calendario[$i][1]."/".$calendario[$i][2].", "; // lo spazio dopo la virgola concatenata alla fine è intenzionale
+                        $inserisci=true;
+                    }
+                }
+                else
+                {
+                    $dataBreveSabatoSanto=substr($dataSabatoSanto,-5);
+                    $concatenazioneGiornoMese=$calendario[$i][1]."-".$calendario[$i][2]; 
+                    /*echo("Data sabato santo: ".$dataSabatoSanto."<br>");
+                    echo("Data breve sabato santo: ".$dataBreveSabatoSanto."<br>");
+                    echo("ConcatenazioneGiornoMese: ".$concatenazioneGiornoMese."<br>");*/
+                    if((strcmp($calendario[$i][0],"Sab")==0) and (strcmp($dataBreveSabatoSanto,$concatenazioneGiornoMese))<>0) // se si tratta di un sabato e se non è il sabato santo
+                    {
+                        $daInserire=$calendario[$i][1]."/".$calendario[$i][2]." - ".$calendario[$i+1][1]."/".$calendario[$i+1][2].", "; // lo spazio dopo la virgola concatenata alla fine è intenzionale
+                        $inserisci=true;
+                    }
                 }
             }
             
             //aggiungo $daInserire all'array $messe
             if($inserisci==true)
             {
+                //echo("Ecco l'attuale contenuto di daInserire<br>");
+                //echo($daInserire."<br>");
                 array_push($messe,$daInserire);
             }
             $inserisci=false;
         }
     // fine script creazione array che conterrà i dati della prima colonna del turno lettori
-
+    
+    //inizio script per l'aggiunta delle messe di gennaio, nel caso in cui l'utente scelga di produrre i turni comprendendo il mese di dicembre (questo si rende necessario in quanto il programma consente di selezionare solo i mesi successivi al mese corrente e senza scavallare l'anno, quindi, di fatto, consente di creare turni solo da febbraio a dicembre, con gennaio non selezionabile. Visto che gennaio non è selezionabile, lo estraggo io d'ufficio se l'utente sceglie dicembre -> avrà cioè il turno di dicembre dell'anno n e di gennaio dell'anno n+1)
+    if(intval($calendario[$i-1][2])==12) // se l'ultimo mese scelto dall'utente è dicembre, parto con lo script
+    {
+        $annoProssimo=$annoInCorso+1;
+        $giornoNumericoPerTimestamp=2;
+        do
+        {
+            if($giornoNumericoPerTimestamp<10)
+                $giornoPerTimestamp="0".$giornoNumericoPerTimestamp;
+            else
+                $giornoPerTimestamp=$giornoNumericoPerTimestamp;
+            $timestamp=strtotime($annoProssimo."/01/".$giornoPerTimestamp);
+            //echo(date('D',$timestamp)."<br>");
+            if(date('D',$timestamp)=="Mon") {$giornoItaliano="Lun";}
+            elseif(date('D',$timestamp)=="Tue") {$giornoItaliano="Mar";}
+            elseif(date('D',$timestamp)=="Wed") {$giornoItaliano="Mer";}
+            elseif(date('D',$timestamp)=="Thu") {$giornoItaliano="Gio";}
+            elseif(date('D',$timestamp)=="Fri") {$giornoItaliano="Ven";}
+            elseif(date('D',$timestamp)=="Sat") {$giornoItaliano="Sab";}
+            else {$giornoItaliano="Dom";}
+            // qui adesso devono partire tutti i ragionamenti per valorizzare la variabile $daInserire (come già valorizzata nelle righe sopra di questo file) e farne la push nell'array $messe con l'istruzione array_push($messe,$daInserire);
+            if((strcmp($giornoItaliano,"Dom")==0) and $giornoNumericoPerTimestamp==2)
+            {
+                $daInserire="02/01, ";
+                array_push($messe,$daInserire);
+            }
+            if((strcmp($giornoItaliano,"Sab")==0) and $giornoNumericoPerTimestamp<31 and $giornoNumericoPerTimestamp<>6 and $giornoNumericoPerTimestamp<>5)
+            {
+                $seguente=$giornoPerTimestamp+1;
+                if($seguente<10)
+                    $seguente="0".$seguente;
+                $daInserire=$giornoPerTimestamp."/01 - ".$seguente."/01, ";
+                array_push($messe,$daInserire);
+            }
+            if((strcmp($giornoItaliano,"Dom")==0) and $giornoNumericoPerTimestamp==7)
+            {
+                $daInserire="07/01, ";
+                array_push($messe,$daInserire);
+            }
+            if((strcmp($giornoItaliano,"Sab")==0) and $giornoNumericoPerTimestamp==31)
+            {
+                $daInserire="31/01 - 01/02, ";
+                array_push($messe,$daInserire);
+            }
+            if((strcmp($giornoItaliano,"Dom")<>0) and $giornoNumericoPerTimestamp==5)
+            {
+                $daInserire="05/01 - 06/01,Epifania";
+                array_push($messe,$daInserire);
+            }
+            if((strcmp($giornoItaliano,"Lun")==0) and $giornoNumericoPerTimestamp==6)
+            {
+                $daInserire="06/01,Epifania";
+                array_push($messe,$daInserire);
+            }
+            $giornoNumericoPerTimestamp++;
+        }
+        while($giornoNumericoPerTimestamp<32);
+    }
+    //fine script per l'aggiunta delle messe di gennaio, nel caso in cui l'utente scelta di produrre i turni comprendendo il mese di dicembre
+    
     //script di debug per controllare il contenuto dell'array $messe
     $quanteMesse=count($messe);
     /*
@@ -348,6 +481,7 @@
 
         for($i=0;$i<$quante;$i++)
         {
+            $stringaSuperamentoIntervallo=""; // stringa che si valorizza solo se la domenica dell'ultimo weekend estratto è il primo giorno del mese successivo all'invervallo di mesi scelto
             $sonoPassato=false; // diventa vera se passo in una delle condizioni if($prefestiviScorsi<$quantiLettoriPrefestivi)
             $sonoPassatoFestivo=false; // come sopra, ma per i festivi
             echo("<tr>");
@@ -364,8 +498,18 @@
                             if(strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)==0)
                             {
                                 $mesePerIntegrazione=$meseFinaleDaCompilare+1;
-                                if($mesePerIntegrazione==13){$mesePerIntegrazione=1;}
-                                $stringaIntegrazione="01/".strval($mesePerIntegrazione);
+                                if($mesePerIntegrazione==13)
+                                {
+                                    $mesePerIntegrazione=1;
+                                }
+                                if(strval($mesePerIntegrazione)<10)
+                                {
+                                    $stringaIntegrazione="01/0".strval($mesePerIntegrazione);
+                                }
+                                else
+                                {
+                                    $stringaIntegrazione="01/".strval($mesePerIntegrazione);
+                                }
                                 if(strcmp($stringaIntegrazione,"01/1")==0) // il 31/12 è sabato
                                 {
                                     echo("<td align='center' colspan='2' width='20%'>".$messa[0]."</td>");
@@ -374,6 +518,7 @@
                                 {
                                     echo("<td align='center' colspan='2' width='20%'>".$messa[0]." - <font color='red'><strong>".$stringaIntegrazione."</strong></font></td>");
                                     $lettoriFestiviInRosso=true;
+                                    $stringaSuperamentoIntervallo=$messa[0]." - ".$stringaIntegrazione;
                                 }                                
                             }
                             else
@@ -393,8 +538,18 @@
                             if(strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)==0)
                             {
                                 $mesePerIntegrazione=$meseFinaleDaCompilare+1;
-                                if($mesePerIntegrazione==13){$mesePerIntegrazione=1;}
-                                $stringaIntegrazione="01/".strval($mesePerIntegrazione);
+                                if($mesePerIntegrazione==13)
+                                {
+                                    $mesePerIntegrazione=1;
+                                }
+                                if(strval($mesePerIntegrazione)<10)
+                                {
+                                    $stringaIntegrazione="01/0".strval($mesePerIntegrazione);
+                                }
+                                else
+                                {
+                                    $stringaIntegrazione="01/".strval($mesePerIntegrazione);
+                                }
                                 if(strcmp($stringaIntegrazione,"01/1")==0) // il 31/12 è sabato
                                 {
                                     echo("<td align='center' colspan='2' width='20%'><strong>".$messa[1]."</strong><br>".$messa[0]."</td>");
@@ -403,7 +558,8 @@
                                 {
                                     echo("<td align='center' colspan='2' width='20%'><strong>".$messa[1]."</strong><br>".$messa[0]." - <font color='red'><strong>".$stringaIntegrazione."</strong></font></td>");
                                     $lettoriFestiviInRosso=true;
-                                }                                
+                                    $stringaSuperamentoIntervallo=$messa[0]." - ".$stringaIntegrazione;
+                                }                          
                             }
                             else
                             {
@@ -420,6 +576,7 @@
                             {
                                 echo("<td align='center' colspan='2' width='20%'><strong>".$messa[1]."</strong><br>".substr($messa[0],0,5)." - <font color='red'><strong>01/".$secondoMese."</strong></font></td>");
                                 $lettoriFestiviInRosso=true;
+                                $stringaSuperamentoIntervallo=substr($messa[0],0,5)."01/".$secondoMese;
                             }
                             else
                             {
@@ -435,7 +592,8 @@
                 }
                 //fine colonna messe
 
-
+                //echo("Stringa superamento intervallo: ".$stringaSuperamentoIntervallo."<br>");
+                
                 //colonna lettori prefestivi
                 echo("<td align='center' width='20%'>");
                     $j=0;
@@ -465,14 +623,27 @@
                     //echo("Sono passato? ".$sonoPassato."<br>");
                     if(($prefestiviScorsi<$quantiLettoriPrefestivi) and ($i<$quanteMesse))
                     {
-                        if(strcmp($messa[1],"SANTO STEFANO")==0)
+                        if(strcmp($messa[1],"Santo Stefano")==0)
                             echo("/"); // se è Santo Stefano, non devono essere mostrati lettori prefestivi
-                        elseif(strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0)
+                        elseif(strcmp($messa[1],"Luned&igrave; dell'Angelo")==0)
                             echo("/"); // se è il lunedì dell'Angelo, non devono essere mostrati lettori prefestivi
-                        elseif(strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0)
+                        elseif(strcmp($messa[1],"Ufficio dei Defunti")==0)
                             echo("/"); // se è il lunedì della sagra, non devono essere mostrati lettori prefestivi
-                        elseif(strcmp($messa[1],"MARIA BAMBINA")==0)
+                        elseif(strcmp($messa[1],"Maria Bambina")==0)
                             echo("/"); // se è Maria Bambina, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"Ceneri")==0)
+                            echo("/"); // se è il Mercoledì delle Ceneri, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"Gioved&igrave; Santo")==0)
+                            echo("/"); // se è il Giovedì Santo, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"Venerd&igrave; Santo")==0)
+                            echo("/"); // se è il Venerdì Santo, non devono essere mostrati lettori prefestivi
+                        elseif((strlen($messa[0])==5) and (strcmp($stringaSuperamentoIntervallo,"")==0) and  strcmp($messa[1],"Pasqua")<>0)
+                            echo("/"); /* questa condizione si verifica se nella colonna delle date c'è una data sola, cioè:
+                                - se il 14 agosto è domenica -> in questo caso sulla messa dell'Assunzione non deve esserci prefestiva, quindi niente lettori prefestivi
+                                - se il 31/10 è domenica e l'utente prevede anche l'estrazione di turni oltre il mese di ottobre -> in questo caso la festa di Tutti i Santi non ha messa prefestiva, quindi niente lettori prefestivi
+                                - se l'8 dicembre è lunedì -> in questo caso non c'è messa prefestiva, quindi niente lettori prefestivi
+                                - se l'Assunzione, Tutti i Santi o l'Immacolata sono di sabato -> in questo caso la domenica che cade il giorno dopo non deve avere la prefestiva, quindi niente lettori prefestivi della domenica se il giorno precedente è l'Assunzione, Tutti i Santi o l'Immacolata
+                            */
                         else
                         {
                             echo($lettoriPrefestivi[$prefestiviScorsi]."<br>");
@@ -484,14 +655,27 @@
                     }
                     if(($prefestiviScorsi<$quantiLettoriPrefestivi) and ($i<$quanteMesse))
                     {
-                        if(strcmp($messa[1],"SANTO STEFANO")==0)
+                        if(strcmp($messa[1],"Santo Stefano")==0)
                             echo("/"); // se è Santo Stefano, non devono essere mostrati lettori prefestivi
-                        elseif(strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0)
+                        elseif(strcmp($messa[1],"Luned&igrave; dell'Angelo")==0)
                             echo("/"); // se è il lunedì dell'Angelo, non devono essere mostrati lettori prefestivi
-                        elseif(strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0)
+                        elseif(strcmp($messa[1],"Ufficio dei Defunti")==0)
                             echo("/"); // se è il lunedì della sagra, non devono essere mostrati lettori prefestivi
-                        elseif(strcmp($messa[1],"MARIA BAMBINA")==0)
+                        elseif(strcmp($messa[1],"Maria Bambina")==0)
                             echo("/"); // se è Maria Bambina, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"Ceneri")==0)
+                            echo("/"); // se è il Mercoledì delle Ceneri, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"Gioved&igrave; Santo")==0)
+                            echo("/"); // se è il Giovedì Santo, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"Venerd&igrave; Santo")==0)
+                            echo("/"); // se è il Venerdì Santo, non devono essere mostrati lettori prefestivi
+                        elseif((strlen($messa[0])==5) and (strcmp($stringaSuperamentoIntervallo,"")==0) and  strcmp($messa[1],"Pasqua")<>0)
+                            echo("/"); /* questa condizione si verifica se nella colonna delle date c'è una data sola, cioè:
+                                - se il 14 agosto è domenica -> in questo caso sulla messa dell'Assunzione non deve esserci prefestiva, quindi niente lettori prefestivi
+                                - se il 31/10 è domenica e l'utente prevede anche l'estrazione di turni oltre il mese di ottobre -> in questo caso la festa di Tutti i Santi non ha messa prefestiva, quindi niente lettori prefestivi
+                                - se l'8 dicembre è lunedì -> in questo caso non c'è messa prefestiva, quindi niente lettori prefestivi
+                                - se l'Assunzione, Tutti i Santi o l'Immacolata sono di sabato -> in questo caso la domenica che cade il giorno dopo non deve avere la prefestiva, quindi niente lettori prefestivi della domenica se il giorno precedente è l'Assunzione, Tutti i Santi o l'Immacolata
+                            */
                         else
                         {
                             //echo("Messe[1]: ".$messe[1]."<br>");
@@ -504,14 +688,27 @@
                     }
                     elseif($prefestiviScorsi==$quantiLettoriPrefestivi and $sonoPassato==true and $i<$quanteMesse)
                     {
-                        if(strcmp($messa[1],"SANTO STEFANO")==0)
+                        if(strcmp($messa[1],"Santo Stefano")==0)
                             echo("/"); // se è Santo Stefano, non devono essere mostrati lettori prefestivi
-                        elseif(strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0)
+                        elseif(strcmp($messa[1],"Luned&igrave; dell'Angelo")==0)
                             echo("/"); // se è il lunedì dell'Angelo, non devono essere mostrati lettori prefestivi
-                        elseif(strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0)
+                        elseif(strcmp($messa[1],"Ufficio dei Defunti")==0)
                             echo("/"); // se è il lunedì della sagra, non devono essere mostrati lettori prefestivi
-                        elseif(strcmp($messa[1],"MARIA BAMBINA")==0)
+                        elseif(strcmp($messa[1],"Maria Bambina")==0)
                             echo("/"); // se è Maria Bambina, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"Ceneri")==0)
+                            echo("/"); // se è il Mercoledì delle Ceneri, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"Gioved&igrave; Santo")==0)
+                            echo("/"); // se è il Giovedì Santo, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"Venerd&igrave; Santo")==0)
+                            echo("/"); // se è il Venerdì Santo, non devono essere mostrati lettori prefestivi
+                        elseif((strlen($messa[0])==5) and (strcmp($stringaSuperamentoIntervallo,"")==0) and  strcmp($messa[1],"Pasqua")<>0)
+                            echo("/"); /* questa condizione si verifica se nella colonna delle date c'è una data sola, cioè:
+                                - se il 14 agosto è domenica -> in questo caso sulla messa dell'Assunzione non deve esserci prefestiva, quindi niente lettori prefestivi
+                                - se il 31/10 è domenica e l'utente prevede anche l'estrazione di turni oltre il mese di ottobre -> in questo caso la festa di Tutti i Santi non ha messa prefestiva, quindi niente lettori prefestivi
+                                - se l'8 dicembre è lunedì -> in questo caso non c'è messa prefestiva, quindi niente lettori prefestivi
+                                - se l'Assunzione, Tutti i Santi o l'Immacolata sono di sabato -> in questo caso la domenica che cade il giorno dopo non deve avere la prefestiva, quindi niente lettori prefestivi della domenica se il giorno precedente è l'Assunzione, Tutti i Santi o l'Immacolata
+                            */
                         else
                         {
                             echo($lettoriPrefestivi[0]);
@@ -522,14 +719,27 @@
                     }
                     elseif($prefestiviScorsi==$quantiLettoriPrefestivi and $sonoPassato==false and $i<$quanteMesse)
                     {
-                        if(strcmp($messa[1],"SANTO STEFANO")==0)
+                        if(strcmp($messa[1],"Santo Stefano")==0)
                             echo("/"); // se è Santo Stefano, non devono essere mostrati lettori prefestivi
-                        elseif(strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0)
+                        elseif(strcmp($messa[1],"Luned&igrave; dell'Angelo")==0)
                             echo("/"); // se è il lunedì dell'Angelo, non devono essere mostrati lettori prefestivi
-                        elseif(strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0)
+                        elseif(strcmp($messa[1],"Ufficio dei Defunti")==0)
                             echo("/"); // se è il lunedì della sagra, non devono essere mostrati lettori prefestivi
-                        elseif(strcmp($messa[1],"MARIA BAMBINA")==0)
+                        elseif(strcmp($messa[1],"Maria Bambina")==0)
                             echo("/"); // se è Maria Bambina, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"Ceneri")==0)
+                            echo("/"); // se è il Mercoledì delle Ceneri, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"Gioved&igrave; Santo")==0)
+                            echo("/"); // se è il Giovedì Santo, non devono essere mostrati lettori prefestivi
+                        elseif(strcmp($messa[1],"Venerd&igrave; Santo")==0)
+                            echo("/"); // se è il Venerdì Santo, non devono essere mostrati lettori prefestivi
+                        elseif((strlen($messa[0])==5) and (strcmp($stringaSuperamentoIntervallo,"")==0) and  strcmp($messa[1],"Pasqua")<>0)
+                            echo("/"); /* questa condizione si verifica se nella colonna delle date c'è una data sola, cioè:
+                                - se il 14 agosto è domenica -> in questo caso sulla messa dell'Assunzione non deve esserci prefestiva, quindi niente lettori prefestivi
+                                - se il 31/10 è domenica e l'utente prevede anche l'estrazione di turni oltre il mese di ottobre -> in questo caso la festa di Tutti i Santi non ha messa prefestiva, quindi niente lettori prefestivi
+                                - se l'8 dicembre è lunedì -> in questo caso non c'è messa prefestiva, quindi niente lettori prefestivi
+                                - se l'Assunzione, Tutti i Santi o l'Immacolata sono di sabato -> in questo caso la domenica che cade il giorno dopo non deve avere la prefestiva, quindi niente lettori prefestivi della domenica se il giorno precedente è l'Assunzione, Tutti i Santi o l'Immacolata
+                            */
                         else
                         {
                             echo($lettoriPrefestivi[0]."<br>".$lettoriPrefestivi[1]);
@@ -539,8 +749,8 @@
                 echo("</td>");
                 //fine colonna lettori prefestivi
 
-                
                 //colonna lettori festivi
+                $hoScrittoAzioneCattolica=0;
                 echo("<td align='center' width='20%'>");
                 $k=0;
                 $dataDaConfrontare=substr($messa[0],-5,2)."/".strval($meseFinaleDaCompilare)."/".strval($annoInCorso);
@@ -573,8 +783,20 @@
                 {
                     if((strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0) and ($lettoriFestiviInRosso==false))
                     {
-                        echo($lettoriFestivi[$festiviScorsi]."<br>");
-                        $festiviScorsi++;
+                        if((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==0)
+                        {
+                            echo("<strong>AZIONE<br>CATTOLICA</strong>");
+                            $hoScrittoAzioneCattolica=1;
+                        }
+                        elseif((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==1)
+                        {
+                            echo(""); // se è l'immacolata ed è già stato scritto azione cattolica, non c'è da fare niente
+                        }
+                        else
+                        {
+                            echo($lettoriFestivi[$festiviScorsi]."<br>");
+                            $festiviScorsi++;
+                        }
                         $sonoPassatoFestivo=true;
                     }
                     else
@@ -605,7 +827,19 @@
                             }
                             else
                             {
-                                echo($lettoriFestivi[$festiviScorsi]."<br>");
+                                if((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==0)
+                                {
+                                    echo("<strong>AZIONE<br>CATTOLICA</strong>");
+                                    $hoScrittoAzioneCattolica=1;
+                                }
+                                elseif((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==1)
+                                {
+                                    echo(""); // se è l'immacolata ed è già stato scritto azione cattolica, non c'è da fare niente
+                                }
+                                else
+                                {
+                                    echo($lettoriFestivi[$festiviScorsi]."<br>");
+                                }
                             }
                         }
                         //echo("Stringa integrazione: ".$stringaIntegrazione." - passo qui 1<br>");
@@ -619,14 +853,26 @@
                 {
                     if((strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0) and ($lettoriFestiviInRosso==false))
                     {
-                        if((strcmp($messa[1],"SANTO STEFANO")==0) or (strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0) or (strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0) or (strcmp($messa[1],"MARIA BAMBINA")==0))
+                        if((strcmp($messa[1],"Santo Stefano")==0) or (strcmp($messa[1],"Luned&igrave; dell'Angelo")==0) or (strcmp($messa[1],"Ufficio dei Defunti")==0) or (strcmp($messa[1],"Maria Bambina")==0))
                         {
                             echo("/"); // se è Santo Stefano, il lunedì dell'angelo, l'ufficio dei defunti alla sagra o la festa di Maria Bambina, serve un lettore solo
                         }
                         else
                         {
-                            echo($lettoriFestivi[$festiviScorsi]);
-                            $festiviScorsi++;
+                            if((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==0)
+                            {
+                                echo("<strong>AZIONE<br>CATTOLICA</strong>");
+                                $hoScrittoAzioneCattolica=1;
+                            }
+                            elseif((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==1)
+                            {
+                                echo(""); // se è l'immacolata ed è già stato scritto azione cattolica, non c'è da fare niente
+                            }
+                            else
+                            {
+                                echo($lettoriFestivi[$festiviScorsi]);
+                                $festiviScorsi++;
+                            }
                         }
                         $sonoPassatoFestivo=true;
                     }
@@ -651,7 +897,19 @@
                             }
                             else
                             {
-                                echo($lettoriFestivi[$festiviScorsi]."<br>");
+                                if((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==0)
+                                {
+                                    echo("<strong>AZIONE<br>CATTOLICA</strong>");
+                                    $hoScrittoAzioneCattolica=1;
+                                }
+                                elseif((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==1)
+                                {
+                                    echo(""); // se è l'immacolata ed è già stato scritto azione cattolica, non c'è da fare niente
+                                }
+                                else
+                                {
+                                    echo($lettoriFestivi[$festiviScorsi]."<br>");
+                                }
                             }
                         }
                         //echo("Stringa integrazione: ".$stringaIntegrazione." - passo qui 2<br>");
@@ -665,14 +923,26 @@
                 {
                    if((strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0) and ($lettoriFestiviInRosso==false))
                     {
-                        if((strcmp($messa[1],"SANTO STEFANO")==0) or (strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0) or (strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0) or (strcmp($messa[1],"MARIA BAMBINA")==0))
+                        if((strcmp($messa[1],"Santo Stefano")==0) or (strcmp($messa[1],"Luned&igrave; dell'Angelo")==0) or (strcmp($messa[1],"Ufficio dei Defunti")==0) or (strcmp($messa[1],"Maria Bambina")==0))
                         {
                             echo("/"); // se è Santo Stefano, il lunedì dell'angelo, l'ufficio dei defunti alla sagra o la festa di Maria Bambina, serve un lettore solo
                         }
                         else
                         {
-                            echo($lettoriFestivi[0]);
-                            $festiviScorsi=1;
+                            if((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==0)
+                            {
+                                echo("<strong>AZIONE<br>CATTOLICA</strong>");
+                                $hoScrittoAzioneCattolica=1;
+                            }
+                            elseif((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==1)
+                            {
+                                echo(""); // se è l'immacolata ed è già stato scritto azione cattolica, non c'è da fare niente
+                            }
+                            else
+                            {
+                                echo($lettoriFestivi[0]);
+                                $festiviScorsi=1;
+                            }
                         }
                     }
                     else
@@ -683,7 +953,19 @@
                         }
                         else
                         {
-                            echo($lettoriFestivi[0]."<br>");
+                            if((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==0)
+                            {
+                                echo("<strong>AZIONE<br>CATTOLICA</strong>");
+                                $hoScrittoAzioneCattolica=1;
+                            }
+                            elseif((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==1)
+                            {
+                                echo(""); // se è l'immacolata ed è già stato scritto azione cattolica, non c'è da fare niente
+                            }
+                            else
+                            {
+                                echo($lettoriFestivi[0]."<br>");
+                            }
                         }
                         //echo("passo qui 3<br>");
                         $festiviScorsi=1;
@@ -695,15 +977,27 @@
                 {
                    if((strcmp($ultimoGiornoIntervalloScelto,$dataDaConfrontare)<>0) and ($lettoriFestiviInRosso==false))
                     {
-                        if((strcmp($messa[1],"SANTO STEFANO")==0) or (strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0) or (strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0) or (strcmp($messa[1],"MARIA BAMBINA")==0))
+                        if((strcmp($messa[1],"Santo Stefano")==0) or (strcmp($messa[1],"Luned&igrave; dell'Angelo")==0) or (strcmp($messa[1],"Ufficio dei Defunti")==0) or (strcmp($messa[1],"Maria Bambina")==0))
                         {
                             echo($lettoriFestivi[0]."<br> /"); // se è Santo Stefano, il lunedì dell'angelo, l'ufficio dei defunti alla sagra o la festa di Maria Bambina, serve un lettore solo
                             $festiviScorsi=1;
                         }
                         else
                         {
-                            echo($lettoriFestivi[0]."<br>".$lettoriFestivi[1]);
-                            $festiviScorsi=2;
+                            if((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==0)
+                            {
+                                echo("<strong>AZIONE<br>CATTOLICA</strong>");
+                                $hoScrittoAzioneCattolica=1;
+                            }
+                            elseif((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==1)
+                            {
+                                echo(""); // se è l'immacolata ed è già stato scritto azione cattolica, non c'è da fare niente
+                            }
+                            else
+                            {
+                                echo($lettoriFestivi[0]."<br>".$lettoriFestivi[1]);
+                                $festiviScorsi=2;
+                            }
                         }
                     }
                     else
@@ -727,15 +1021,27 @@
                             }
                             else
                             {
-                                if((strcmp($messa[1],"SANTO STEFANO")==0) or (strcmp($messa[1],"LUNED&Iacute; dell'Angelo")==0) or (strcmp($messa[1],"UFFICIO DEI DEFUNTI")==0) or (strcmp($messa[1],"MARIA BAMBINA")==0))
+                                if((strcmp($messa[1],"Santo Stefano")==0) or (strcmp($messa[1],"Luned&igrave; dell'Angelo")==0) or (strcmp($messa[1],"Ufficio dei Defunti")==0) or (strcmp($messa[1],"Maria Bambina")==0))
                                 {
                                         echo($lettoriFestivi[0]."<br>/<br>"); // se è Santo Stefano, il lunedì dell'angelo, l'ufficio dei defunti alla sagra o la festa di Maria Bambina, serve un lettore solo
                                         $festiviScorsi=1;
                                 }
                                 else
                                 {
-                                    echo($lettoriFestivi[0]."<br>".$lettoriFestivi[1]."<br>");
-                                    $festiviScorsi=2;
+                                    if((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==0)
+                                    {
+                                        echo("<strong>AZIONE<br>CATTOLICA</strong>");
+                                        $hoScrittoAzioneCattolica=1;
+                                    }
+                                    elseif((strcmp($messa[1],"Immacolata")==0) and $hoScrittoAzioneCattolica==1)
+                                    {
+                                        echo(""); // se è l'immacolata ed è già stato scritto azione cattolica, non c'è da fare niente
+                                    }
+                                    else
+                                    {
+                                        echo($lettoriFestivi[0]."<br>".$lettoriFestivi[1]."<br>");
+                                        $festiviScorsi=2;
+                                    }
                                 }
                             }
                         }
@@ -794,13 +1100,28 @@
                 {
                     $secondoMeseIntervallo=$mesi[$i][2];                        
                 }
+                $annoProssimo=$annoInCorso+1;
                 if(strcmp($primoMeseIntervallo,$secondoMeseIntervallo)==0) // se l'utente ha scelto di fare i turni per un mese solo
                 {
-                    echo("<td width='100%'><div align='center'><font size=5><strong>".$primoMeseIntervallo." ".$annoInCorso."</strong></font></div></td>");
+                    if(strcmp($secondoMeseIntervallo,"Dicembre")==0) // se il mese con cui finisce il turno è dicembre, nel titolo inserisco anche gennaio dell'anno dopo
+                    {
+                        echo("<td width='100%'><div align='center'><font size=5><strong>".$primoMeseIntervallo." ".$annoInCorso." e Gennaio ".$annoProssimo."</strong></font></div></td>");
+                    }
+                    else
+                    {
+                        echo("<td width='100%'><div align='center'><font size=5><strong>".$primoMeseIntervallo." ".$annoInCorso."</strong></font></div></td>");
+                    }
                 }
                 else
                 {
-                    echo("<td width='100%'><div align='center'><font size=5><strong>".$primoMeseIntervallo." - ".$secondoMeseIntervallo." ".$annoInCorso."</strong></font></div></td>");
+                    if(strcmp($secondoMeseIntervallo,"Dicembre")==0) // se il mese con cui finisce il turno è dicembre, nel titolo inserisco anche gennaio dell'anno dopo
+                    {
+                        echo("<td width='100%'><div align='center'><font size=5><strong>".$primoMeseIntervallo." - ".$secondoMeseIntervallo." ".$annoInCorso." e Gennaio ".$annoProssimo."</strong></font></div></td>");
+                    }
+                    else
+                    {
+                        echo("<td width='100%'><div align='center'><font size=5><strong>".$primoMeseIntervallo." - ".$secondoMeseIntervallo." ".$annoInCorso."</strong></font></div></td>");
+                    }
                 }
             ?> 
         </table>
@@ -828,7 +1149,7 @@
             Come di consueto si raccomanda di cercare un sostituto in caso di assenza.
             <br><br>
             <?php
-                if($meseNumerico==6 or $meseNumerico==7 or $meseNumerico==8)
+                if(($meseNumerico==1 and $numMesi>6) or ($meseNumerico==2 and $numMesi>5) or ($meseNumerico==3 and $numMesi>4) or ($meseNumerico==4 and $numMesi>3) or ($meseNumerico==5 and $numMesi>2) or ($meseNumerico==6 and $numMesi>1) or $meseNumerico==7 or $meseNumerico==8)
                 {
                     echo("Considerato il periodo estivo e le probabili assenze per le vacanze, si richiede particolare attenzione e la disponibilit&agrave; a leggere nel caso risulti assente il lettore di turno.<br><br>");
                 }

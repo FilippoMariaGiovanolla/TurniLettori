@@ -5,7 +5,7 @@
     <body>
         <?php
             $mese=$_POST["mese"]; // mese scelto dall'utente per iniziare la creazione del calendario lettori
-            $mese++; // siccome nella definizione dei mesi in calcoloCalendario.html si parte da 0 nel conteggio, qui aumento di uno per ottenere il valore corretto
+            $mese++; // siccome nella definizione dei mesi in calcoloCalendario.php si parte da 0 nel conteggio, qui aumento di uno per ottenere il valore corretto
             if($mese<10)
             {
                 $mese="0".$mese;
@@ -64,6 +64,15 @@
             //echo("Giorno Ceneri: ".$giornoCeneri."<br>");
             // fine script che calcola il giorno delle ceneri
 
+            //script che calcola la Domenica delle Palme
+            $dataPalme=strtotime('-7 day',strtotime($pasqua));
+            $mesePalme=date("m",$dataPalme);
+            $giornoPalme=date("d",$dataPalme);
+            $dataPalme=date('Y-m-d',$dataPalme); // E' GIUSTO CHE $dataPalme STIA DOPO IL MESE E IL GIORNO            
+            //echo("Palme: ".$dataPalme."<br>");
+            //echo("Mese Palme: ".$mesePalme."<br>");
+            //echo("Giorno Palme: ".$giornoPalme."<br>");
+            // fine script che calcola il giorno delle Palme
 
             // script che calcola il Giovedì Santo
             $dataGiovediSanto=strtotime('-3 day',strtotime($pasqua));
@@ -120,6 +129,18 @@
                 //echo("quante volte passo da ottobre: ".$quanteVoltePassoDaOttobre."<br>");
                 global $calendario; // ridefinisco la variabile $calendario all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
                 global $quanteVoltePassoDaOttobre; // ridefinisco la variabile $calendario all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
+                global $meseCeneri; // ridefinisco la variabile $meseCeneri all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
+                global $giornoCeneri; // ridefinisco la variabile $giornoCeneri all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
+                global $mesePalme; // ridefinisco la variabile $mesePalme all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
+                global $giornoPalme; // ridefinisco la variabile $giornoPalme all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
+                global $meseGiovediSanto; // ridefinisco la variabile $meseGiovediSanto all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
+                global $giornoGiovediSanto; // ridefinisco la variabile $giornoGiovediSanto all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
+                global $meseVenerdiSanto; // ridefinisco la variabile $meseVenerdiSanto all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
+                global $giornoVenerdiSanto; // ridefinisco la variabile $giornoVenerdiSanto all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
+                global $meseSabatoSanto; // ridefinisco la variabile $meseSabatoSanto all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
+                global $giornoSabatoSanto; // ridefinisco la variabile $giornoSabatoSanto all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
+                global $mesePasquetta; // ridefinisco la variabile $mesePasquetta all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
+                global $giornoPasquetta; // ridefinisco la variabile $giornoPasquetta all'interno di questa funzione con scope global, così mi riferisco alla variabile omonima definita fuori dalla funzione stessa
                 $quanti=count($calendario); //conta gli elementi presenti nell'array
                 $giornoStampato=0;
                 if($k<10)
@@ -153,16 +174,18 @@
                     //echo("Quante volte passo da ottobre: ".$quanteVoltePassoDaOttobre."<br>");
                 }
                 
+                //echo("Giorno ceneri numerico: ".intval($giornoCeneri).'<br>');
+                //echo("Mese ceneri numerico: ".intval($meseCeneri).'<br>');
                 //test per l'aggiunta nel calendario delle Messe che non sono di sabato e domenica
                 if(
                     ($mese=="01" and $k==1 and $giornoStampato==0) or // primo gennaio
                     ($mese=="01" and $k==5 and $giornoStampato==0) or // prefestiva Epifania
                     ($mese=="01" and $k==6 and $giornoStampato==0) or // Epifania
-                    ($mese=='$meseCeneri' and $k=='$giornoCeneri' and $giornoStampato==0) or // Ceneri
-                    ($mese=='$meseGiovediSanto' and $k=='$giornoGiovediSanto' and $giornoStampato==0) or // Giovedì Santo
-                    ($mese=='$meseVenerdiSanto' and $k=='$giornoVenerdiSanto' and $giornoStampato==0) or // Venerdì Santo
-                    ($mese=='$meseSabatoSanto' and $k=='$giornoSabatoSanto' and $giornoStampato==0) or // Sabato Santo
-                    ($mese=='$mesePasquetta' and $k=='$giornoPasquetta' and $giornoStampato==0) or // Lunedì dell'Angelo
+                    ($mese==$meseCeneri and $k==intval($giornoCeneri) and $giornoStampato==0) or // Ceneri
+                    ($mese==$meseGiovediSanto and $k==intval($giornoGiovediSanto) and $giornoStampato==0) or // Giovedì Santo
+                    ($mese==$meseVenerdiSanto and $k==intval($giornoVenerdiSanto) and $giornoStampato==0) or // Venerdì Santo
+                    ($mese==$meseSabatoSanto and $k==intval($giornoSabatoSanto) and $giornoStampato==0) or // Sabato Santo
+                    ($mese==$mesePasquetta and $k==intval($giornoPasquetta) and $giornoStampato==0) or // Lunedì dell'Angelo
                     ($mese=="08" and $k==14 and $giornoStampato==0) or // prefestiva Assunzione
                     ($mese=="08" and $k==15 and $giornoStampato==0) or // Assunzione
                     ($mese=="09" and $k==8 and $giornoStampato==0) or // Maria Bambina
@@ -194,14 +217,14 @@
                 if($mese=="04" or $mese=="06" or $mese=="09" or $mese=="11")
                 {
                     //echo("passo di qui<br>");
-                    for($k=1;$k<=30;$k++)
+                    for($k=1;$k<31;$k++)
                     {
                         outputGiornoData($k,$annoInCorso,$mese,$quanteVoltePassoDaOttobre);
                     }
                 }
-                elseif($mese==01 or $mese==03 or $mese==05 or $mese==07 or $mese==08 or $mese==10 or $mese==12)
+                elseif($mese=="01" or $mese=="03" or $mese=="05" or $mese=="07" or $mese=="08" or $mese=="10" or $mese=="12")
                 {
-                    for($k=1;$k<=31;$k++)
+                    for($k=1;$k<32;$k++)
                     {
                         outputGiornoData($k,$annoInCorso,$mese,$quanteVoltePassoDaOttobre);
                     }
@@ -247,6 +270,11 @@
             while($i<$numMesi);
             // fine ciclo per l'estrazione dei giorni cui assegnare i lettori
             echo("</fieldset>");
+            
+            if($mese==13) //  se tra i mesi passati c'è dicembre, avviso l'utente che nel calenario proposto ci sarà anche gennaio, in quanto il calendario dei turni di gennaio non può essere fatto a dicembre, perché il programma non può scavallare l'anno nei conteggi
+            {
+                echo("<h2><font color='red'>ATTENZIONE: Siccome i turni compilati comprendono il mese di dicembre, il programma calcoler&agrave; in automatico anche il calendario di gennaio, che diversamente non sarebbe estraibile.</font></h2>");
+            }
 
             /*$arrayTest[0][0]="Sab";
             $arrayTest[0][1]="06";
@@ -288,7 +316,7 @@
             <table border=0; width="100%">
                 <tr>
                     <td width="50%" align="right"><INPUT TYPE="SUBMIT" NAME="invio" VALUE="Avanti"></td>
-                    <td width="50%" align="left"><a href="calcoloCalendario.html"><img src='Indietro.jpg' width="10%" height="10%"></a></td>
+                    <td width="50%" align="left"><a href="calcoloCalendario.php"><img src='Indietro.jpg' width="10%" height="10%"></a></td>
                 </tr>
             </table>
         </form>
